@@ -1,0 +1,6 @@
+overrides:
+  electron-to-chromium: "1.5.377"
+  node-releases: "2.0.48"
+
+onlyBuiltDependencies:
+  - esbuild
