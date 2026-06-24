@@ -12,7 +12,6 @@ interface Agent {
 }
 
 function loadAgents(env: Record<string, string>): Agent[] {
-  // agents.json takes priority
   try {
     const parsed = JSON.parse(
       readFileSync(join(process.cwd(), "agents.json"), "utf8")
@@ -20,7 +19,6 @@ function loadAgents(env: Record<string, string>): Agent[] {
     if (parsed.length > 0) return parsed;
   } catch {}
 
-  // Fall back to env vars
   const url = env.BACKEND_AGENT_URL;
   const apiKey = env.BACKEND_AGENT_API_KEY;
   if (url && apiKey) {
@@ -36,20 +34,20 @@ function loadAgents(env: Record<string, string>): Agent[] {
   return [];
 }
 
-function apiPlugin(agents: Agent[]): Plugin {
+function apiPlugin(agents: Agent[], base: string): Plugin {
   const agentMap = Object.fromEntries(agents.map((a) => [a.id, a]));
+  // Normalise: "/foo/bar" → "/foo/bar/"
+  const b = base.endsWith("/") ? base : `${base}/`;
 
   return {
     name: "api-middleware",
     configureServer(server) {
-      // GET /api/agents
-      server.middlewares.use("/api/agents", (_req, res) => {
+      server.middlewares.use(`${b}api/agents`, (_req, res) => {
         res.setHeader("Content-Type", "application/json");
         res.end(JSON.stringify(agents.map(({ id, name }) => ({ id, name }))));
       });
 
-      // POST /api/chat
-      server.middlewares.use("/api/chat", (req, res) => {
+      server.middlewares.use(`${b}api/chat`, (req, res) => {
         if (req.method !== "POST") { res.statusCode = 405; res.end(); return; }
 
         const chunks: Buffer[] = [];
@@ -115,7 +113,9 @@ function apiPlugin(agents: Agent[]): Plugin {
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
+  const base = env.BASE_PATH || "/";
   return {
-    plugins: [react(), tailwindcss(), apiPlugin(loadAgents(env))],
+    base,
+    plugins: [react(), tailwindcss(), apiPlugin(loadAgents(env), base)],
   };
 });

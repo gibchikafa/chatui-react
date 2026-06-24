@@ -31,18 +31,19 @@ function loadAgents() {
 }
 
 const agents = loadAgents();
-
 const agentMap = Object.fromEntries(agents.map((a) => [a.id, a]));
+
+// Normalise base path: "/foo/bar" → "/foo/bar"  (no trailing slash for Express routes)
+const BASE_PATH = (process.env.BASE_PATH || "/").replace(/\/$/, "") || "/";
 
 const app = express();
 app.use(express.json());
 
-// Return public agent list (no secrets)
-app.get("/api/agents", (_req, res) => {
+app.get(`${BASE_PATH}/api/agents`, (_req, res) => {
   res.json(agents.map(({ id, name }) => ({ id, name })));
 });
 
-app.post("/api/chat", async (req, res) => {
+app.post(`${BASE_PATH}/api/chat`, async (req, res) => {
   const { prompt, session_id, agent_id } = req.body;
 
   if (!prompt || typeof prompt !== "string") {
@@ -86,7 +87,7 @@ app.post("/api/chat", async (req, res) => {
 
 // Serve built frontend in production
 const distPath = join(__dirname, "dist");
-app.use(express.static(distPath));
+app.use(BASE_PATH, express.static(distPath));
 app.get("*", (_req, res) => {
   res.sendFile(join(distPath, "index.html"));
 });

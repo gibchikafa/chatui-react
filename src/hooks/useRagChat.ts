@@ -49,7 +49,7 @@ export function useRagChat() {
 
   // Load agents from server
   useEffect(() => {
-    fetch("/api/agents")
+    fetch(`${import.meta.env.BASE_URL}api/agents`)
       .then((r) => r.json())
       .then((data: Agent[]) => {
         setAgents(data);
@@ -115,7 +115,7 @@ export function useRagChat() {
       setIsLoading(true);
 
       try {
-        const res = await fetch("/api/chat", {
+        const res = await fetch(`${import.meta.env.BASE_URL}api/chat`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
