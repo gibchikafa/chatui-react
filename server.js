@@ -8,14 +8,29 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const PORT = Number(process.env.PORT) || 3001;
 
-// Load agents config
-let agents;
-try {
-  agents = JSON.parse(readFileSync(join(__dirname, "agents.json"), "utf8"));
-} catch {
-  console.error("Could not read agents.json — copy agents.json.example to agents.json and fill in your backends.");
+// Load agents: agents.json takes priority, env vars are the fallback
+function loadAgents() {
+  try {
+    const parsed = JSON.parse(readFileSync(join(__dirname, "agents.json"), "utf8"));
+    if (parsed.length > 0) return parsed;
+  } catch {}
+
+  const url = process.env.BACKEND_URL;
+  const apiKey = process.env.API_KEY;
+  if (url && apiKey) {
+    return [{
+      id: process.env.AGENT_ID || "default",
+      name: process.env.AGENT_NAME || "RAG Agent",
+      url,
+      apiKey,
+    }];
+  }
+
+  console.error("No agents configured. Provide agents.json or set BACKEND_URL and API_KEY in .env");
   process.exit(1);
 }
+
+const agents = loadAgents();
 
 const agentMap = Object.fromEntries(agents.map((a) => [a.id, a]));
 

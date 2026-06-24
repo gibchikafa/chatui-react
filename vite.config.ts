@@ -1,4 +1,4 @@
-import { defineConfig, type Plugin } from "vite";
+import { defineConfig, loadEnv, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { readFileSync } from "fs";
@@ -11,13 +11,29 @@ interface Agent {
   apiKey: string;
 }
 
-function loadAgents(): Agent[] {
+function loadAgents(env: Record<string, string>): Agent[] {
+  // agents.json takes priority
   try {
-    return JSON.parse(readFileSync(join(process.cwd(), "agents.json"), "utf8")) as Agent[];
-  } catch {
-    console.warn("[vite] agents.json not found — copy agents.json.example to get started");
-    return [];
+    const parsed = JSON.parse(
+      readFileSync(join(process.cwd(), "agents.json"), "utf8")
+    ) as Agent[];
+    if (parsed.length > 0) return parsed;
+  } catch {}
+
+  // Fall back to env vars
+  const url = env.BACKEND_URL;
+  const apiKey = env.API_KEY;
+  if (url && apiKey) {
+    return [{
+      id: env.AGENT_ID || "default",
+      name: env.AGENT_NAME || "RAG Agent",
+      url,
+      apiKey,
+    }];
   }
+
+  console.warn("[vite] No agents configured — add agents.json or set BACKEND_URL + API_KEY in .env");
+  return [];
 }
 
 function apiPlugin(agents: Agent[]): Plugin {
@@ -97,6 +113,9 @@ function apiPlugin(agents: Agent[]): Plugin {
   };
 }
 
-export default defineConfig({
-  plugins: [react(), tailwindcss(), apiPlugin(loadAgents())],
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), "");
+  return {
+    plugins: [react(), tailwindcss(), apiPlugin(loadAgents(env))],
+  };
 });
