@@ -1,0 +1,14 @@
+[
+  {
+    "id": "llamaindex",
+    "name": "LlamaIndex RAG",
+    "url": "http://your-llamaindex-host/v1/endpoint",
+    "apiKey": "your-api-key"
+  },
+  {
+    "id": "langgraph",
+    "name": "LangGraph RAG",
+    "url": "http://your-langgraph-host/v1/endpoint",
+    "apiKey": "your-api-key"
+  }
+]
