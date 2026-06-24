@@ -33,8 +33,16 @@ function loadAgents() {
 const agents = loadAgents();
 const agentMap = Object.fromEntries(agents.map((a) => [a.id, a]));
 
-// Normalise base path: "/foo/bar" → "/foo/bar"  (no trailing slash for Express routes)
-const BASE_PATH = (process.env.BASE_PATH || "/").replace(/\/$/, "") || "/";
+function resolveBasePath() {
+  if (process.env.BASE_PATH) return process.env.BASE_PATH;
+  const project = process.env.HOPSWORKS_PROJECT_NAME;
+  const job = process.env.HOPSWORKS_JOB_NAME;
+  if (project && job) return `/hopsworks-api/pythonapp/${project}/${job}/`;
+  return "/";
+}
+
+// Strip trailing slash for Express route mounting (Express adds it back where needed)
+const BASE_PATH = resolveBasePath().replace(/\/$/, "") || "/";
 
 const app = express();
 app.use(express.json());

@@ -111,9 +111,17 @@ function apiPlugin(agents: Agent[], base: string): Plugin {
   };
 }
 
+function resolveBasePath(env: Record<string, string>): string {
+  if (env.BASE_PATH) return env.BASE_PATH;
+  const project = process.env.HOPSWORKS_PROJECT_NAME ?? env.HOPSWORKS_PROJECT_NAME;
+  const job = process.env.HOPSWORKS_JOB_NAME ?? env.HOPSWORKS_JOB_NAME;
+  if (project && job) return `/hopsworks-api/pythonapp/${project}/${job}/`;
+  return "/";
+}
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
-  const base = env.BASE_PATH || "/";
+  const base = resolveBasePath(env);
   return {
     base,
     plugins: [react(), tailwindcss(), apiPlugin(loadAgents(env), base)],

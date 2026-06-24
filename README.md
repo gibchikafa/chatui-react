@@ -60,6 +60,22 @@ BACKEND_AGENT_NAME=RAG Agent   # optional display name
 BACKEND_AGENT_ID=default       # optional id
 ```
 
+#### Reverse proxy / base path
+
+When deployed behind a reverse proxy at a subpath, the app needs to know its base URL so API calls are routed correctly.
+
+On **Hopsworks** this is automatic — the app reads `HOPSWORKS_PROJECT_NAME` and `HOPSWORKS_JOB_NAME` from the environment and constructs:
+```
+/hopsworks-api/pythonapp/<project>/<job>/
+```
+
+For **other environments**, set `BASE_PATH` explicitly:
+```env
+BASE_PATH=/myapp/
+```
+
+`BASE_PATH` always takes priority over the Hopsworks variables.
+
 `agents.json` takes priority if both are present.
 
 All backends must accept `POST { prompt, session_id? }` and return `{ answer, sources?, session_id? }`.
