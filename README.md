@@ -20,11 +20,13 @@ pnpm install
 
 ### 2. Configure your agents
 
+There are two ways to configure backends — use whichever fits your setup.
+
+#### Option A — `agents.json` (multi-agent)
+
 ```bash
 cp agents.json.example agents.json
 ```
-
-Edit `agents.json` with your backend URLs and API keys:
 
 ```json
 [
@@ -43,6 +45,23 @@ Edit `agents.json` with your backend URLs and API keys:
 ]
 ```
 
+With multiple agents, a selector appears in the sidebar. New chats use the selected agent; existing conversations remember which agent they were started with.
+
+#### Option B — environment variables (single agent)
+
+```bash
+cp .env.example .env
+```
+
+```env
+BACKEND_URL=http://your-host/v1/endpoint
+API_KEY=your-api-key
+AGENT_NAME=RAG Agent   # optional display name
+AGENT_ID=default       # optional id
+```
+
+`agents.json` takes priority if both are present.
+
 All backends must accept `POST { prompt, session_id? }` and return `{ answer, sources?, session_id? }`.
 
 ### 3. Run in development
@@ -60,12 +79,7 @@ pnpm build
 pnpm start
 ```
 
-The Express server in `server.js` serves the built frontend and handles the API proxy. Set `PORT` in a `.env` file to change the port (default 3001).
-
-```bash
-cp .env.example .env
-# edit PORT if needed
-```
+The Express server in `server.js` serves the built frontend and handles the API proxy. Set `PORT` in `.env` to change the port (default 3001).
 
 ## Project structure
 
@@ -89,7 +103,7 @@ src/
 
 ## Agent API contract
 
-Every backend listed in `agents.json` must implement:
+Every backend (whether configured via `agents.json` or env vars) must implement:
 
 **Request**
 ```
