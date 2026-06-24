@@ -21,8 +21,8 @@ function loadAgents(env: Record<string, string>): Agent[] {
   } catch {}
 
   // Fall back to env vars
-  const url = env.BACKEND_URL;
-  const apiKey = env.API_KEY;
+  const url = env.BACKEND_AGENT_URL;
+  const apiKey = env.BACKEND_AGENT_API_KEY;
   if (url && apiKey) {
     return [{
       id: env.AGENT_ID || "default",
@@ -32,7 +32,7 @@ function loadAgents(env: Record<string, string>): Agent[] {
     }];
   }
 
-  console.warn("[vite] No agents configured — add agents.json or set BACKEND_URL + API_KEY in .env");
+  console.warn("[vite] No agents configured — add agents.json or set BACKEND_AGENT_URL + BACKEND_AGENT_API_KEY in .env");
   return [];
 }
 

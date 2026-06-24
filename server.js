@@ -15,8 +15,8 @@ function loadAgents() {
     if (parsed.length > 0) return parsed;
   } catch {}
 
-  const url = process.env.BACKEND_URL;
-  const apiKey = process.env.API_KEY;
+  const url = process.env.BACKEND_AGENT_URL;
+  const apiKey = process.env.BACKEND_AGENT_API_KEY;
   if (url && apiKey) {
     return [{
       id: process.env.AGENT_ID || "default",
@@ -26,7 +26,7 @@ function loadAgents() {
     }];
   }
 
-  console.error("No agents configured. Provide agents.json or set BACKEND_URL and API_KEY in .env");
+  console.error("No agents configured. Provide agents.json or set BACKEND_AGENT_URL and BACKEND_AGENT_API_KEY in .env");
   process.exit(1);
 }
 
