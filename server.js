@@ -33,25 +33,14 @@ function loadAgents() {
 const agents = loadAgents();
 const agentMap = Object.fromEntries(agents.map((a) => [a.id, a]));
 
-function resolveBasePath() {
-  if (process.env.BASE_PATH) return process.env.BASE_PATH;
-  const project = process.env.HOPSWORKS_PROJECT_NAME;
-  const job = process.env.HOPSWORKS_JOB_NAME;
-  if (project && job) return `/hopsworks-api/pythonapp/${project}/${job}/`;
-  return "/";
-}
-
-// Strip trailing slash for Express route mounting (Express adds it back where needed)
-const BASE_PATH = resolveBasePath().replace(/\/$/, "") || "/";
-
 const app = express();
 app.use(express.json());
 
-app.get(`${BASE_PATH}/api/agents`, (_req, res) => {
+app.get("/api/agents", (_req, res) => {
   res.json(agents.map(({ id, name }) => ({ id, name })));
 });
 
-app.post(`${BASE_PATH}/api/chat`, async (req, res) => {
+app.post("/api/chat", async (req, res) => {
   const { prompt, session_id, agent_id } = req.body;
 
   if (!prompt || typeof prompt !== "string") {
@@ -95,7 +84,7 @@ app.post(`${BASE_PATH}/api/chat`, async (req, res) => {
 
 // Serve built frontend in production
 const distPath = join(__dirname, "dist");
-app.use(BASE_PATH, express.static(distPath));
+app.use(express.static(distPath));
 app.get("*", (_req, res) => {
   res.sendFile(join(distPath, "index.html"));
 });

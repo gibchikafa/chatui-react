@@ -16,5 +16,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "node_modules/vite/client.d.ts"]
+  "include": ["src"]
 }

@@ -30,6 +30,13 @@ export interface Conversation {
 
 const STORAGE_KEY = "rag-conversations";
 
+// Derive the API base from the page URL so it works behind any reverse proxy
+// without needing the base path baked in at build time.
+function apiBase(): string {
+  const p = window.location.pathname;
+  return p.endsWith("/") ? p : `${p}/`;
+}
+
 function loadConversations(): Conversation[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -49,7 +56,7 @@ export function useRagChat() {
 
   // Load agents from server
   useEffect(() => {
-    fetch(`${import.meta.env.BASE_URL}api/agents`)
+    fetch(`${apiBase()}api/agents`)
       .then((r) => r.json())
       .then((data: Agent[]) => {
         setAgents(data);
@@ -115,7 +122,7 @@ export function useRagChat() {
       setIsLoading(true);
 
       try {
-        const res = await fetch(`${import.meta.env.BASE_URL}api/chat`, {
+        const res = await fetch(`${apiBase()}api/chat`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
