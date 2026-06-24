@@ -55,9 +55,9 @@ cp .env.example .env
 
 ```env
 BACKEND_AGENT_URL=http://your-host/v1/endpoint
-BACKEND_AGENT_API_KEY=your-api-key
-BACKEND_AGENT_NAME=RAG Agent   # optional display name
-BACKEND_AGENT_ID=default       # optional id
+BACKEND_AGENT_API_KEY=your-api-key   # optional — falls back to SERVING_API_KEY on Hopsworks
+BACKEND_AGENT_NAME=RAG Agent         # optional display name
+BACKEND_AGENT_ID=default             # optional id
 ```
 
 #### Reverse proxy / base path

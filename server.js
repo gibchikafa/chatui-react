@@ -16,17 +16,17 @@ function loadAgents() {
   } catch {}
 
   const url = process.env.BACKEND_AGENT_URL;
-  const apiKey = process.env.BACKEND_AGENT_API_KEY;
-  if (url && apiKey) {
+  const apiKey = process.env.BACKEND_AGENT_API_KEY || process.env.SERVING_API_KEY;
+  if (url) {
     return [{
       id: process.env.BACKEND_AGENT_ID || "default",
       name: process.env.BACKEND_AGENT_NAME || "RAG Agent",
       url,
-      apiKey,
+      apiKey: apiKey || "",
     }];
   }
 
-  console.error("No agents configured. Provide agents.json or set BACKEND_AGENT_URL and BACKEND_AGENT_API_KEY in .env");
+  console.error("No agents configured. Provide agents.json or set BACKEND_AGENT_URL in .env");
   process.exit(1);
 }
 

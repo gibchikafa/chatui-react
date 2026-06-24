@@ -20,17 +20,17 @@ function loadAgents(env: Record<string, string>): Agent[] {
   } catch {}
 
   const url = env.BACKEND_AGENT_URL;
-  const apiKey = env.BACKEND_AGENT_API_KEY;
-  if (url && apiKey) {
+  const apiKey = env.BACKEND_AGENT_API_KEY || process.env.SERVING_API_KEY || env.SERVING_API_KEY;
+  if (url) {
     return [{
       id: env.BACKEND_AGENT_ID || "default",
       name: env.BACKEND_AGENT_NAME || "RAG Agent",
       url,
-      apiKey,
+      apiKey: apiKey || "",
     }];
   }
 
-  console.warn("[vite] No agents configured — add agents.json or set BACKEND_AGENT_URL + BACKEND_AGENT_API_KEY in .env");
+  console.warn("[vite] No agents configured — add agents.json or set BACKEND_AGENT_URL in .env");
   return [];
 }
 
