@@ -25,8 +25,8 @@ function loadAgents(env: Record<string, string>): Agent[] {
   const apiKey = env.BACKEND_AGENT_API_KEY;
   if (url && apiKey) {
     return [{
-      id: env.AGENT_ID || "default",
-      name: env.AGENT_NAME || "RAG Agent",
+      id: env.BACKEND_AGENT_ID || "default",
+      name: env.BACKEND_AGENT_NAME || "RAG Agent",
       url,
       apiKey,
     }];

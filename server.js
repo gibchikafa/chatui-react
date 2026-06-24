@@ -19,8 +19,8 @@ function loadAgents() {
   const apiKey = process.env.BACKEND_AGENT_API_KEY;
   if (url && apiKey) {
     return [{
-      id: process.env.AGENT_ID || "default",
-      name: process.env.AGENT_NAME || "RAG Agent",
+      id: process.env.BACKEND_AGENT_ID || "default",
+      name: process.env.BACKEND_AGENT_NAME || "RAG Agent",
       url,
       apiKey,
     }];
